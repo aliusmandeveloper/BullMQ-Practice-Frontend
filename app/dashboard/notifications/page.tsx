@@ -15,10 +15,10 @@ export default function NotificationsPage() {
         isLoading,
     } = useNotifications();
     const markAsRead = useMarkAsRead();
-    console.log(
-        "FRONTEND NOTIFICATIONS:",
-        notifications
-    );
+    // console.log(
+    //     "FRONTEND NOTIFICATIONS:",
+    //     notifications
+    // );
     if (isLoading) {
         return <div>Loading notifications...</div>;
     }
