@@ -5,3 +5,11 @@ export const getUsers = async () => {
 
   return res.data.data;
 };
+export const createUser = async (data: any) => {
+  const res = await axiosInstance.post(
+    "/users",
+    data
+  );
+
+  return res.data;
+};

@@ -8,59 +8,57 @@ import { loginSchema, LoginSchema } from "@/features/auth/schemas/login.schema";
 import { useLogin } from "@/features/auth/hooks/useLogin";
 
 export default function LoginPage() {
-  const router = useRouter();
+const router = useRouter();
 
-  const loginMutation = useLogin();
+const loginMutation = useLogin();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginSchema>({
-    resolver: zodResolver(loginSchema),
-  });
+const {
+  register,
+  handleSubmit,
+  formState: { errors },
+} = useForm<LoginSchema>({
+  resolver: zodResolver(loginSchema),
+});
 
-  const onSubmit = (data: LoginSchema) => {
+const onSubmit = (data: LoginSchema) => {
+  console.log("FORM DATA:", data);
 
-    console.log("FORM DATA:", data);
+  loginMutation.mutate(data, {
+    onSuccess: (response) => {
+      console.log("LOGIN SUCCESS:", response);
 
-    loginMutation.mutate(data, {
+      localStorage.setItem("token", response.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.user)
+      );
 
-      onSuccess: (response) => {
+      document.cookie = `token=${response.token}; path=/`;
 
-        console.log("LOGIN SUCCESS:", response);
-
-        localStorage.setItem(
-          "token",
-          response.token
-        );
-
-        document.cookie =
-          `token=${response.token}; path=/`;
-
+      if (response.user.role === "admin") {
         router.push("/dashboard");
-        router.refresh();
-
-      },
-      onError: (error: any) => {
-
-        console.log("LOGIN ERROR:", error);
-
-        console.log(
-          "ERROR RESPONSE:",
-          error?.response?.data
-        );
-
-        alert(
-          error?.response?.data?.message ||
-          "Login Failed"
-        );
-
+      } else {
+        router.push("/dashboard/tasks");
       }
 
-    });
+      router.refresh();
+    },
 
-  };
+    onError: (error: any) => {
+      console.log("LOGIN ERROR:", error);
+
+      console.log(
+        "ERROR RESPONSE:",
+        error?.response?.data
+      );
+
+      alert(
+        error?.response?.data?.message ||
+        "Login Failed"
+      );
+    },
+  });
+};
 
 
   return (
