@@ -8,11 +8,16 @@ import {
   deleteTask,
 } from "../api/task.api";
 
-/* GET TASKS */
-export const useTasks = () => {
+/* GET TASKS - WITH PAGINATION */
+export const useTasks = (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}) => {
   return useQuery({
-    queryKey: ["tasks"],
-    queryFn: getTasks,
+    queryKey: ["tasks", params],
+    queryFn: () => getTasks(params),
   });
 };
 

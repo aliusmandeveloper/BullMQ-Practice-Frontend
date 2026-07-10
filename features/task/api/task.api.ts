@@ -7,9 +7,30 @@ export const createTask = async (data: any) => {
 };
 
 /* GET ALL TASKS */
-export const getTasks = async () => {
-  const res = await axiosInstance.get("/tasks");
-  return res.data.data; // ✅ ONLY ARRAY RETURN
+export const getTasks = async (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}) => {
+  // Build query string
+  const queryParams = new URLSearchParams();
+  
+  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.limit) queryParams.append("limit", params.limit.toString());
+  if (params?.search) queryParams.append("search", params.search);
+  if (params?.status) queryParams.append("status", params.status);
+
+  const queryString = queryParams.toString();
+  const url = queryString ? `/tasks?${queryString}` : "/tasks";
+
+  const res = await axiosInstance.get(url);
+  
+  // 🔥 Return full response with pagination metadata
+  return {
+    data: res.data.data,        // Array of tasks
+    pagination: res.data.pagination,  // Pagination metadata
+  };
 };
 
 /* UPDATE TASK */
